@@ -1,10 +1,12 @@
-function [T,S,kron_mat,err_full] = comp_kron_Robust_rr(corrmat,m,int,num_comp,lambdaS,toep_flg,basis_flg,optSVD)
+function [T,S,kron_mat,err_full] = comp_kron_Robust_rr(corrmat,m,int,lambdaL,lambdaS,toep_flg,optSVD)
 %Function to do LS Robust PCA-based Kronecker decomposition of empirical
 %Sample covariance matrix: corrmat = T (x) S.
-%m = length(r_crop), n = length(c_crop), int = time length
+%m = S factor dimension, int = time length
 %T: Time covariance, S: spatial.
-%num_comp: number of kronecker terms. 
+%num_comp: nuclear norm penalty. 
+%LambdaS sparsity penalization.
 %kron(T,S) is the Kronecker component of the robust estimate
+%OptSVD: Controls which RobustPCA method to use (see robust_PCA.m)
 %
 %Options:
 %
@@ -12,18 +14,10 @@ function [T,S,kron_mat,err_full] = comp_kron_Robust_rr(corrmat,m,int,num_comp,la
 %toep_flg: if nonzero, constrain estimate to be block Toeplitz (for stationary temporal
 %processes).
 %
-%nuke_flg(1): Use nuclear norm regularization (PRLS, Tsiligkaridis 2013) of kronecker term magnitudes.
-%nuke_flg(2): if nuke_flg(1) = 1, is regularization parameter for nuclear
-%norm.
-%
-%basis_flg: if basis_flg{1} is 1 use basis_flg{2} as predefined temporal
-%basis vector. Only works if num_comp = 1.
 %
 %
-%
-%NOTE: After this, may need to do additional regularization such as
-%projection onto the set of positive semidefinite matrices, L2/L1
-%regularization, etc.
+%NOTE: After this, due to numerics may need to do additional regularization such as
+%projection onto the set of positive semidefinite matrices.
 %
 %Author: Kristjan Greenewald
 %Date: 12/31/12
@@ -32,6 +26,8 @@ function [T,S,kron_mat,err_full] = comp_kron_Robust_rr(corrmat,m,int,num_comp,la
 nonZeroVec = NaN;
 
 n = 1;
+num_comp = lambdaL;
+basis_flg{1} = 0;
 
 %Kronecker
 %Rearrange
