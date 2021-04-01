@@ -3,8 +3,8 @@ function [T,S,kron_mat,err_full] = comp_kron_Robust_rr(corrmat,m,int,lambdaL,lam
 %Sample covariance matrix: corrmat = T (x) S.
 %m = S factor dimension, int = time length
 %T: Time covariance, S: spatial.
-%num_comp: nuclear norm penalty. 
-%LambdaS sparsity penalization.
+%lamdaL: nuclear norm penalty. 
+%lambdaS: sparsity penalization.
 %kron(T,S) is the Kronecker component of the robust estimate
 %OptSVD: Controls which RobustPCA method to use (see robust_PCA.m)
 %
